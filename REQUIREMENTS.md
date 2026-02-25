@@ -108,7 +108,7 @@ Each `WiFiManagerParameter` requires a fixed buffer length allocated at declarat
 | Sleep Low Battery (s) | `sleep.low_battery_s` | 300 | 8 |
 | Sleep Critical Battery (s) | `sleep.critical_battery_s` | 86400 | 8 |
 | Battery Low Voltage | `battery.low_v` | 3.5 | 8 |
-| Battery Critical Voltage | `battery.critical_v` | 3.2 | 8 |
+| Battery Critical Voltage | `battery.critical_v` | 3.40 | 8 |
 
 On portal save: parse all string inputs to native types; write complete `config.json`;
 set `wifi.reset` to `false`; reboot.

@@ -718,11 +718,11 @@ All 6 new tests are in `test/test_all.cpp` and are run under `pio test -e native
 
 **Impact:** Same library-level limitation as Iteration 1 Deviation 2. No new code deviation — the constraint is inherited from the PubSubClient library. Acceptable for home LAN use.
 
-#### DOCUMENTATION NOTE — REQUIREMENTS.md Portal Parameters Table: `battery.critical_v` Default Mismatch
+#### DOCUMENTATION NOTE — REQUIREMENTS.md Portal Parameters Table: `battery.critical_v` Default (RESOLVED)
 
-**Issue:** `REQUIREMENTS.md` Configuration Portal parameters table (line ~111) lists `battery.critical_v` default as `3.2`. However, `lib/ConfigManager/ConfigManager.cpp:17` and the hardcoded defaults table in REQUIREMENTS.md §Hardcoded Defaults both show the actual implemented default as `3.40`.
+**Issue (fixed):** `REQUIREMENTS.md` Configuration Portal parameters table listed `battery.critical_v` default as `3.2`. The hardcoded default was changed to `3.40` in `lib/ConfigManager/ConfigManager.cpp:17` and the hardcoded defaults table in REQUIREMENTS.md §Hardcoded Defaults, but the portal parameters table was not updated at the same time.
 
-**Impact:** The portal parameter table in REQUIREMENTS.md was not updated when the default was changed to 3.40 in ConfigManager.cpp. This is a documentation inconsistency in REQUIREMENTS.md only — the code is self-consistent (ConfigManager.cpp and the hardcoded defaults table both agree on 3.40). The unit test at `test/test_all.cpp:76` asserts `3.40f` and passes. No code change required; REQUIREMENTS.md portal parameter table should be updated to reflect `3.40` for `battery.critical_v`.
+**Resolution:** `REQUIREMENTS.md` portal parameters table updated to show `3.40`. All references are now consistent: ConfigManager.cpp, the hardcoded defaults table, the portal parameters table, and `test/test_all.cpp:76` all agree on `3.40`.
 
 ---
 
@@ -746,7 +746,7 @@ All 6 new tests are in `test/test_all.cpp` and are run under `pio test -e native
 | Battery-based sleep selection | Code review (`src/main.cpp:390–396`) |
 | Voltage publish (always published) | Build-verified (`src/main.cpp:377–383`) |
 | Status QoS 0 (library deviation — same as It1 Dev 2) | Code review / hardware-only |
-| `battery.critical_v` default mismatch in REQUIREMENTS.md | Documentation note (no code change needed) |
+| `battery.critical_v` default in REQUIREMENTS.md portal table | Fixed — updated to `3.40` |
 
 **Legend:**
 
