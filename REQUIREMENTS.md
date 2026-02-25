@@ -224,7 +224,7 @@ Plain string, published to `…/status`:
 
 ---
 
-## Iteration 2 — Battery Monitoring `[PLANNED]`
+## Iteration 2 — Battery Monitoring `[COMPLETE]`
 
 ### Hardware
 
