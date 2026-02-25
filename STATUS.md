@@ -71,3 +71,17 @@ parameter setup; never returns. deepSleep uses (uint64_t) cast. Static WiFiClien
 in setup() for MQTT (avoids new/malloc). config_save(cfg) with wifi_reset=false written
 before WiFi.disconnect() in scenario 3. Sensor reads inlined with LED updates in inter-read
 gaps. Serial warning emitted if sleep_normal_s > 4294.
+
+## Agent 6 — Unit tests — 2026-02-25
+
+Files created/modified:
+
+- test/test_all.cpp (8 Unity tests: utils x6, config_apply_defaults x2)
+- lib/ConfigManager/ConfigManager.cpp (config_apply_defaults moved outside NATIVE_TEST guard)
+- src/utils.h (added stdint.h for uint32_t on native builds)
+
+Build: pio test -e native → BLOCKED (no GCC/g++ in PATH on this Windows system)
+Notes: Tests are discovered and structurally correct (file compilation attempted by PlatformIO).
+To run: install MinGW-w64 from [winlibs.com](https://winlibs.com/), add bin/ to PATH, then pio test -e native.
+PlatformIO v6.1 discovers test files at test/ root only (not subdirectories).
+Merged via branch agent/6-unit-tests.
