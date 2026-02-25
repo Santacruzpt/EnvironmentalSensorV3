@@ -93,6 +93,39 @@ void test_defaults_unconditional_overwrite(void) {
     TEST_ASSERT_EQUAL_INT(300, cfg.sleep_low_battery_s);
 }
 
+// ── utils: build_telemetry_topic ─────────────────────────────────────────────
+
+void test_build_telemetry_topic_standard(void) {
+    char buf[96];
+    build_telemetry_topic("devices", "esp-a1b2c3", "temperature", buf, sizeof(buf));
+    TEST_ASSERT_EQUAL_STRING("devices/esp-a1b2c3/telemetry/temperature", buf);
+}
+
+void test_build_telemetry_topic_nested_root(void) {
+    char buf[96];
+    build_telemetry_topic("home/env", "esp-a1b2c3", "humidity", buf, sizeof(buf));
+    TEST_ASSERT_EQUAL_STRING("home/env/esp-a1b2c3/telemetry/humidity", buf);
+}
+
+// ── utils: battery_status_str ────────────────────────────────────────────────
+
+void test_battery_status_str_critical(void) {
+    TEST_ASSERT_EQUAL_STRING("BAT_CRIT", battery_status_str(3.1f, 3.5f, 3.2f));
+}
+
+void test_battery_status_str_low(void) {
+    TEST_ASSERT_EQUAL_STRING("BAT_LOW", battery_status_str(3.3f, 3.5f, 3.2f));
+}
+
+void test_battery_status_str_normal(void) {
+    TEST_ASSERT_NULL(battery_status_str(3.8f, 3.5f, 3.2f));
+}
+
+void test_battery_status_str_boundary_crit(void) {
+    // exactly at critical threshold → BAT_CRIT (uses <=)
+    TEST_ASSERT_EQUAL_STRING("BAT_CRIT", battery_status_str(3.2f, 3.5f, 3.2f));
+}
+
 // ── main ─────────────────────────────────────────────────────────────────────
 
 int main(void) {
@@ -107,6 +140,13 @@ int main(void) {
 
     RUN_TEST(test_defaults_all_fields);
     RUN_TEST(test_defaults_unconditional_overwrite);
+
+    RUN_TEST(test_build_telemetry_topic_standard);
+    RUN_TEST(test_build_telemetry_topic_nested_root);
+    RUN_TEST(test_battery_status_str_critical);
+    RUN_TEST(test_battery_status_str_low);
+    RUN_TEST(test_battery_status_str_normal);
+    RUN_TEST(test_battery_status_str_boundary_crit);
 
     return UNITY_END();
 }
