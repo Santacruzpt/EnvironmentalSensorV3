@@ -34,10 +34,8 @@ src/
   utils.h                 Inline pure-logic functions (NATIVE_TEST-portable)
   main.cpp                Thin orchestrator — 13-step publish flow
 test/
-  native/
-    test_config.cpp       Unity tests: apply_defaults(), partial config
-    test_utils.cpp        Unity tests: topic builder, name formatter, float formatter
-platformio.ini            [env:d1_mini] + [env:native] for host-side tests
+  test_all.cpp            Combined Unity tests (flat — PlatformIO v6 only discovers test/ root)
+platformio.ini            [env:d1_mini] (default) + [env:native] for host-side tests
 PLAN.md                   This file
 REVIEW.md                 Requirements compliance checklist (Agent 8)
 STATUS.md                 Agent completion log (each agent appends)
@@ -104,14 +102,18 @@ bool dht_read_average(DHT& dht, int num_reads, float& temp_out, float& hum_out);
 ```cpp
 void format_device_name(uint32_t chip_id, char* buf, size_t len); // "esp-a1b2c3"
 void build_topic(const char* root, const char* device, const char* sub, char* buf, size_t len);
+void build_telemetry_topic(const char* root, const char* device, const char* sub, char* buf, size_t len); // Iteration 2
 void format_float_1dp(float val, char* buf, size_t len);           // "22.5"
+const char* battery_status_str(float battery_v, float low_v, float critical_v); // "BAT_CRIT" / "BAT_LOW" / nullptr — Iteration 2
 ```
 
 ---
 
 ## Agent Pipeline
 
-```
+### Iteration 1 (complete ✅)
+
+```text
 Agent 1  — Interfaces + ConfigManager.cpp + platformio.ini + TASKS.md
   |
   +-- Agent 2  — WifiPortalManager.cpp         (parallel)
@@ -120,11 +122,25 @@ Agent 1  — Interfaces + ConfigManager.cpp + platformio.ini + TASKS.md
   |
 Agent 5  — src/main.cpp (13-step orchestrator)
   |
-Agent 6  — test/native/ (Unity unit tests)
+Agent 6  — test/test_all.cpp (Unity unit tests, flat — PlatformIO v6 constraint)
   |
 Agent 7  — Full build verification (pio run -e d1_mini clean)
   |
 Agent 8  — REVIEW.md compliance checklist
+```
+
+### Iteration 2 (pending)
+
+```
+Agent 9  — REQUIREMENTS.md rewrite (done by orchestrator — MD files are orchestrator-owned)
+  |
+Agent 10 — src/utils.h + test/test_all.cpp
+           (build_telemetry_topic, battery_status_str, 6 new Unity tests)
+  |
+Agent 11 — src/main.cpp update
+           (ADC read, telemetry topics, voltage publish, battery sleep, chained sleep, status logic)
+  |
+Agent 12 — Build verification (pio run) + REVIEW.md Iteration 2 section
 ```
 
 Each agent works in an isolated **git worktree** (its own branch). The orchestrator verifies and
@@ -155,10 +171,11 @@ Worktrees live in `.worktrees/` (gitignored). Branches are merged into `main` af
 
 ### TASKS.md update responsibility
 
-**The orchestrator** (main Claude session) owns TASKS.md — not the agents.
+**The orchestrator** (main Claude session) owns TASKS.md and all other `.md` files — not the agents.
 
 - Set `🔄 In Progress` **before** launching the agent
 - Set `✅ Done` **after** merge to main is confirmed
+- REQUIREMENTS.md, PLAN.md, STATUS.md, REVIEW.md — all updated and committed by the orchestrator after each agent completes, never by the agent itself
 
 ---
 
@@ -175,6 +192,24 @@ Before declaring done, Agent 5 must verify:
 - `mqtt_flush_and_disconnect()` before `led_off()` + `deepSleep()`
 - `format_device_name(ESP.getChipId(), device_name, sizeof(device_name))`
 - Serial warning if `sleep_normal_s > 4294`
+
+---
+
+## Agent 11 — main.cpp Self-Check (Iteration 2)
+
+Before declaring done, Agent 11 must verify:
+
+- `#define BATTERY_ADC_SCALE (4.2f / 1023.0f)` defined near top of file
+- `analogRead(A0) * BATTERY_ADC_SCALE` — uses A0, not any other pin
+- `build_telemetry_topic()` used for temperature, humidity, and voltage topics
+- `build_topic()` still used for status topic (no telemetry prefix)
+- `battery_status_str()` used to determine status; battery priority applied before sensor OK/NOK
+- voltage published with `format_float_1dp()` + `mqtt_publish_measurement()` to `topic_volt`
+- Sleep duration selected from `battery_v` vs thresholds (critical → low → normal)
+- `sleep_chained()` helper defined; never calls `ESP.deepSleep()` directly in Step 13
+- `SLEEP_MAGIC` sentinel written to RTC slots 64–65; cleared on full publish cycle
+- `(uint64_t)chunk * 1000000ULL` — no int overflow in deepSleep call
+- `led_off()` called inside `sleep_chained()` before `ESP.deepSleep()`
 
 ---
 
@@ -198,7 +233,8 @@ Start a new session with the resume instruction above — no manual state restor
 
 ### Git Checkpoints
 Committed after each agent batch with messages like:
-```
+
+```text
 feat: Agent 1 — interfaces + ConfigManager + platformio.ini native env
 feat: Agents 2-4 — WifiPortalManager, MqttClient, DhtSensor, LedIndicator
 ```
@@ -208,9 +244,12 @@ feat: Agents 2-4 — WifiPortalManager, MqttClient, DhtSensor, LedIndicator
 ## Verification
 
 | What | Method | Agent |
-|------|--------|-------|
+| --- | --- | --- |
 | Each lib compiles | `pio run -e d1_mini` incremental | 1–5 |
-| Pure logic correct | `pio test -e native` all green | 6 |
+| Pure logic correct | `pio test -e native` all green (8 tests) | 6 |
 | Full integrated build | `pio run -e d1_mini` clean | 7 |
-| All requirements covered | REVIEW.md (file:line mapping) | 8 |
-| WiFi / MQTT / sensor / LED / sleep | Manual hardware test | Human |
+| Iteration 1 requirements | REVIEW.md (file:line mapping) | 8 |
+| Iteration 2 pure logic | `pio test -e native` all green (14 tests) | 10 |
+| Iteration 2 full build | `pio run` clean | 12 |
+| Iteration 2 requirements | REVIEW.md Iteration 2 section | 12 |
+| WiFi / MQTT / sensor / LED / sleep / battery | Manual hardware test | Human |
