@@ -129,3 +129,21 @@ Iteration 2's new MQTT topic hierarchy. battery_status_str() returns "BAT_CRIT",
 "BAT_LOW", or nullptr based on <= comparisons against thresholds. All 6 new tests
 passed natively (GCC available in PATH). No existing tests were modified or broken.
 Merged via branch agent/10-utils-tests.
+
+## Agent 11 — main.cpp Iteration 2 — 2026-02-25
+
+Files created/modified:
+
+- src/main.cpp (Iteration 2: ADC read, telemetry topics, battery status priority, battery sleep, chained sleep)
+- logs/agent11-main-iteration2.md
+
+Build: pio run -e d1_mini → PASS (RAM 40.6%, Flash 38.4%)
+Notes: Added BATTERY_ADC_SCALE (4.2f/1023.0f), SLEEP_MAGIC sentinel, SLEEP_MAX_S=4294 defines.
+sleep_chained() helper writes remaining duration to RTC user memory before each segment sleep.
+Chained sleep continuation check at setup() start resumes sleep without full publish cycle.
+Step 5b reads analogRead(A0) * BATTERY_ADC_SCALE for battery voltage.
+Topics use build_telemetry_topic() for temp/hum/volt; build_topic() unchanged for status.
+Step 7 applies battery_status_str() priority (BAT_CRIT/BAT_LOW) before sensor OK/NOK.
+Step 9b publishes battery voltage to telemetry/voltage (always, regardless of sensor state).
+Step 13 selects sleep_s from battery thresholds (critical/low/normal) then calls sleep_chained().
+Merged via branch agent/11-main-iteration2.
