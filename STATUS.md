@@ -85,3 +85,15 @@ Notes: Tests are discovered and structurally correct (file compilation attempted
 To run: install MinGW-w64 from [winlibs.com](https://winlibs.com/), add bin/ to PATH, then pio test -e native.
 PlatformIO v6.1 discovers test files at test/ root only (not subdirectories).
 Merged via branch agent/6-unit-tests.
+
+## Agent 7 — Build Verification — 2026-02-25
+
+Files created/modified:
+
+- none (clean pass, no fixes required)
+
+Build: pio run -e d1_mini → PASS (SUCCESS, RAM 40.5%, Flash 38.3%)
+Notes: Full integration build after Agent 6's changes (ConfigManager.cpp restructure,
+utils.h stdint.h fix) compiled cleanly. Only warning is in upstream PubSubClient.cpp:523
+(signed/unsigned comparison in publish_P) — not actionable. No source modifications needed.
+Verified via branch agent/7-build-verify.
