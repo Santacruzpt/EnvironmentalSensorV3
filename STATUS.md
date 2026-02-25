@@ -97,3 +97,19 @@ Notes: Full integration build after Agent 6's changes (ConfigManager.cpp restruc
 utils.h stdint.h fix) compiled cleanly. Only warning is in upstream PubSubClient.cpp:523
 (signed/unsigned comparison in publish_P) — not actionable. No source modifications needed.
 Verified via branch agent/7-build-verify.
+
+## Agent 8 — Compliance Review — 2026-02-25
+
+Files created/modified:
+
+- REVIEW.md (568 lines — full compliance checklist, 9 sections, every item cited to file:line)
+- src/main.cpp (Deviation 1 fix: 300s deepSleep on portal timeout before reboot)
+
+Build: pio run -e d1_mini → PASS (SUCCESS, RAM 40.5%, Flash 38.3%)
+Notes: Two deviations found.
+  Deviation 1 (FIXED): portal timeout path called ESP.restart() immediately;
+    requirement specifies 300s deepSleep first. Fixed via portal_save_fired flag.
+  Deviation 2 (LIBRARY LIMIT, not fixable): status MQTT publish uses QoS 0;
+    requirement specifies QoS 1. PubSubClient publish() has no QoS parameter —
+    documented in REVIEW.md §10.
+Merged via branch agent/8-compliance-review.
