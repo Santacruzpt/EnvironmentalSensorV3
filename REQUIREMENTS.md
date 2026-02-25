@@ -223,14 +223,51 @@ Plain string, published to `…/status`:
 
 ## Iteration 2 — Battery Monitoring `[PLANNED]`
 
+### Hardware
+
+- Wemos D1 Mini Battery Shield (TP5410-based): LiPo charger + DC-DC boost converter (3.7 V → 5 V)
+- Battery voltage is read from **A0** via the shield's built-in resistor divider — this measures
+  the raw LiPo voltage (before the boost converter), not the 5 V regulated output
+- Scale factor: `battery_v = analogRead(A0) * (4.2f / 1023.0f)` for shield v1.1.0
+  (full-scale = 4.2 V, fully charged LiPo; adjust constant if using a different divider ratio)
+- The scale factor is a compile-time constant `BATTERY_ADC_SCALE` in `src/main.cpp`
+
 ### Battery Voltage
 
-- Read ADC and convert to battery voltage
-- Publish to `{topic_root}/esp-{chip_id}/battery` each cycle
+- Read `analogRead(A0)` once per cycle immediately after sensor read (Step 5b)
+- Publish to `{topic_root}/esp-{chip_id}/telemetry/voltage` — 1 decimal place string, retain true, QoS 0
+- Example: `"3.7"`
+
+### MQTT Topics (change from Iteration 1)
+
+All measurements are now published under a `telemetry/` sub-level:
+
+- `{topic_root}/esp-{chip_id}/telemetry/temperature`
+- `{topic_root}/esp-{chip_id}/telemetry/humidity`
+- `{topic_root}/esp-{chip_id}/telemetry/voltage`
+
+The status topic is unchanged: `{topic_root}/esp-{chip_id}/status`.
+
+Topic construction uses a new `build_telemetry_topic()` helper in `src/utils.h`:
+`snprintf(buf, len, "%s/%s/telemetry/%s", root, device, sub)`
+
+### Status Payload (change from Iteration 1)
+
+Two new status values are added. Priority (top-to-bottom, first match wins):
+
+| Condition | Status |
+| --- | --- |
+| `battery_v <= battery.critical_v` | `"BAT_CRIT"` |
+| `battery_v <= battery.low_v` | `"BAT_LOW"` |
+| sensor read succeeded | `"OK"` |
+| sensor read failed | `"NOK"` |
+| broker-triggered LWT | `"OFFLINE"` |
+
+Battery state takes priority over sensor state — if battery is critical or low, that is the most actionable signal regardless of whether the sensor read succeeded.
 
 ### Battery Conservation
 
-- Select sleep duration based on measured voltage — evaluate top-to-bottom, first match wins:
+Select sleep duration based on measured voltage — evaluate top-to-bottom, first match wins:
 
 | Condition | Sleep duration |
 | --- | --- |
@@ -238,8 +275,22 @@ Plain string, published to `…/status`:
 | `battery_v <= battery.low_v` | `sleep.low_battery_s` |
 | `battery_v > battery.low_v` | `sleep.normal_s` |
 
-- In Iteration 1 (no battery monitoring), always use `sleep.normal_s`
-- `critical_battery_s` default is 86400s (24h) which exceeds the ESP8266 hardware sleep limit of ~4294s; Iteration 2 firmware must implement chained sleep cycles for durations above this limit
+### Chained Sleep
+
+`ESP.deepSleep()` maximum is ~4294 s (~71 min). `sleep.critical_battery_s` default is 86400 s (24 h) which exceeds this limit. Iteration 2 implements chained sleep:
+
+- Before sleeping, write remaining duration to RTC user memory (8 bytes: magic word + remaining_s)
+- Sleep in segments of at most 4294 s
+- On wake, check RTC memory; if remaining > 0, sleep another segment without running the full publish cycle — battery state will be rechecked on the next full wake regardless
+- RTC user memory slots 64–65 (8 bytes) are reserved for chained sleep state; cleared when the full publish cycle runs
+
+### Publish Flow Changes (from Iteration 1)
+
+- **Step 5b** (new, between Steps 5 and 6): Read `analogRead(A0)`, convert to `battery_v`, print to Serial
+- **Step 7** (change): Determine status using priority table above
+- **Steps 8 & 9** (change): Topics now use `build_telemetry_topic()` for temperature and humidity
+- **Step 9b** (new, after Step 9): Publish `battery_v` formatted as `"X.X"` to `…/telemetry/voltage`
+- **Step 13** (change): Select sleep duration based on `battery_v`; use `sleep_chained()` helper for durations > 4294 s
 
 ---
 
