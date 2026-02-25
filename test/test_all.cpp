@@ -73,7 +73,7 @@ void test_defaults_all_fields(void) {
     TEST_ASSERT_EQUAL_INT(300, cfg.sleep_low_battery_s);
     TEST_ASSERT_EQUAL_INT(86400, cfg.sleep_critical_battery_s);
     TEST_ASSERT_FLOAT_WITHIN(0.001f, 3.5f, cfg.battery_low_v);
-    TEST_ASSERT_FLOAT_WITHIN(0.001f, 3.2f, cfg.battery_critical_v);
+    TEST_ASSERT_FLOAT_WITHIN(0.001f, 3.40f, cfg.battery_critical_v);
 }
 
 void test_defaults_unconditional_overwrite(void) {

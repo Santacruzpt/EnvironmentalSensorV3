@@ -14,7 +14,7 @@ void config_apply_defaults(Config& cfg) {
     cfg.sleep_low_battery_s = 300;
     cfg.sleep_critical_battery_s = 86400;
     cfg.battery_low_v = 3.5f;
-    cfg.battery_critical_v = 3.2f;
+    cfg.battery_critical_v = 3.40f;
 }
 
 #ifndef NATIVE_TEST

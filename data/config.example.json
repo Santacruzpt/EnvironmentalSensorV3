@@ -16,6 +16,6 @@
     },
     "battery": {
         "low_v": 3.5,
-        "critical_v": 3.2
+        "critical_v": 3.4
     }
 }

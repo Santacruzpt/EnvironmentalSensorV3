@@ -60,7 +60,7 @@ Hardcoded defaults. For keys that appear in the Configuration Portal parameter t
 | `sleep.low_battery_s` | `300` |
 | `sleep.critical_battery_s` | `86400` |
 | `battery.low_v` | `3.5` |
-| `battery.critical_v` | `3.2` |
+| `battery.critical_v` | `3.40` |
 
 ### Configuration Portal
 

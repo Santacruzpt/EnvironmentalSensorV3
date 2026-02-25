@@ -40,4 +40,4 @@ void config_apply_defaults(Config& cfg);
 //   sleep_low_battery_s    = 300
 //   sleep_critical_battery_s = 86400
 //   battery_low_v          = 3.5f
-//   battery_critical_v     = 3.2f
+//   battery_critical_v     = 3.40f
