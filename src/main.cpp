@@ -365,11 +365,11 @@ void setup() {
     if (sensor_ok) {
         char val_buf[16];
 
-        format_float_0dp(temp, val_buf, sizeof(val_buf));
+        format_float_1dp(temp, val_buf, sizeof(val_buf));
         mqtt_publish_measurement(mqtt_client, topic_temp, val_buf);
         Serial.printf("[MQTT] Published temperature: %s -> %s\n", topic_temp, val_buf);
 
-        format_float_0dp(hum, val_buf, sizeof(val_buf));
+        format_float_1dp(hum, val_buf, sizeof(val_buf));
         mqtt_publish_measurement(mqtt_client, topic_hum, val_buf);
         Serial.printf("[MQTT] Published humidity: %s -> %s\n", topic_hum, val_buf);
     }

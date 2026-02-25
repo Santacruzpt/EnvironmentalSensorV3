@@ -137,11 +137,8 @@ Individual topics are used (one per measurement) rather than a single JSON paylo
 
 Plain string values, published to individual topics:
 
-- `…/temperature` → `"22"` — degrees Celsius, integer string (no decimal places), retain true, QoS 0
-- `…/humidity` → `"65"` — relative humidity %, integer string (no decimal places), retain true, QoS 0
-
-Note: DHT11 has 1°C / 1% RH resolution and always returns integer values — publishing without
-decimal places accurately reflects sensor resolution.
+- `…/temperature` → `"22.5"` — degrees Celsius, 1 decimal place, retain true, QoS 0
+- `…/humidity` → `"65.0"` — relative humidity %, 1 decimal place, retain true, QoS 0
 
 QoS 0 with retain=true means the broker stores and re-serves the last value, but if a publish
 packet is lost in transit the retained value goes stale without either side knowing. This is
