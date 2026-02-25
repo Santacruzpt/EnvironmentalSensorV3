@@ -78,6 +78,9 @@ static void open_portal_and_reboot(WiFiManager& wm, Config& cfg,
     params[8] = &p_blow;
     params[9] = &p_bcrit;
 
+    static bool portal_save_fired = false;
+    portal_save_fired = false;
+
     wm.setSaveConfigCallback([]() {
         Serial.println("[Portal] Save callback fired — writing config");
         strlcpy(cfg_ptr->mqtt_server,     params[0]->getValue(), sizeof(cfg_ptr->mqtt_server));
@@ -92,6 +95,7 @@ static void open_portal_and_reboot(WiFiManager& wm, Config& cfg,
         cfg_ptr->battery_critical_v       = atof(params[9]->getValue());
         cfg_ptr->wifi_reset = false;
         config_save(*cfg_ptr);
+        portal_save_fired = true;
         Serial.println("[Portal] Config saved");
     });
 
@@ -112,11 +116,16 @@ static void open_portal_and_reboot(WiFiManager& wm, Config& cfg,
         yield();
     }
 
-    // Portal closed — reboot regardless of outcome (saved or timed out)
-    Serial.println("[Portal] Closed — rebooting");
+    // Portal closed — saved: reboot immediately; timed out: sleep 300s then hardware-reboot on wake
     led_off();
-    delay(200);
-    ESP.restart();
+    if (portal_save_fired) {
+        Serial.println("[Portal] Saved — rebooting");
+        delay(200);
+        ESP.restart();
+    } else {
+        Serial.println("[Portal] Timed out — sleeping 300s");
+        ESP.deepSleep((uint64_t)300 * 1000000ULL);
+    }
 }
 
 // ── setup: full 13-step publish cycle ───────────────────────────────────────
