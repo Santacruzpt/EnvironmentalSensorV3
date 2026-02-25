@@ -136,11 +136,10 @@ reading the source. Every `[ ] UNIMPLEMENTED` entry is absent from the source.
   then `open_portal_and_reboot(..., 300, false)`
 
 - [x] Portal timeout fallback: deep sleep 300s then reboot
-  `open_portal_and_reboot` (src/main.cpp:119) always calls `ESP.restart()` regardless of
-  save/timeout; PORTAL_TIMEOUT path is handled by reboot into normal startup on next wake.
-  **NOTE:** The requirement states "enter deep sleep for 300s, then reboot." The implementation
-  reboots immediately without sleeping 300s on portal timeout. This is a partial deviation:
-  reboot does occur, but the 300s sleep before reboot is absent.
+  `src/main.cpp` — `portal_save_fired` flag (static bool) tracks whether the save callback
+  fired. After the portal loop exits: if saved → `ESP.restart()` immediately; if timed out →
+  `ESP.deepSleep((uint64_t)300 * 1000000ULL)` (device hardware-reboots on wake).
+  Fixed in Agent 8 — see Deviation 1 note in §10.
 
 - [x] Portal AP name `EnvSensor-{chip_id}`
   `src/main.cpp:136` — `snprintf(ap_name, sizeof(ap_name), "EnvSensor-%06x", ESP.getChipId())`
@@ -540,7 +539,7 @@ but are unused in the main flow. This is not a requirement violation.
 ## 11. Verification Coverage
 
 | Requirement Area | Verification Method |
-|---|---|
+| --- | --- |
 | `config_apply_defaults` — all 11 default values | Unit test (`test/test_all.cpp:61–77`) |
 | `config_apply_defaults` — unconditional overwrite | Unit test (`test/test_all.cpp:79–94`) |
 | `format_device_name` — typical chip ID | Unit test (`test/test_all.cpp:19–23`) |
@@ -562,6 +561,7 @@ but are unused in the main flow. This is not a requirement violation.
 | Status QoS 0 vs QoS 1 (Deviation 2) | Hardware-only / code review |
 
 **Legend:**
+
 - **Unit test**: verified by `test/test_all.cpp` running on native platform
 - **Build-verified**: confirmed present by successful `pio run` compilation
 - **Hardware-only**: requires the physical ESP8266 device; not covered by automated tests
