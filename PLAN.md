@@ -129,17 +129,14 @@ Agent 7  — Full build verification (pio run -e d1_mini clean)
 Agent 8  — REVIEW.md compliance checklist
 ```
 
-### Iteration 2 (pending)
+### Iteration 2 (in progress)
 
-```
-Agent 9  — REQUIREMENTS.md rewrite (done by orchestrator — MD files are orchestrator-owned)
-  |
+```text
+Agent 9  — REQUIREMENTS.md rewrite ✅ done by session
 Agent 10 — src/utils.h + test/test_all.cpp
            (build_telemetry_topic, battery_status_str, 6 new Unity tests)
-  |
 Agent 11 — src/main.cpp update
            (ADC read, telemetry topics, voltage publish, battery sleep, chained sleep, status logic)
-  |
 Agent 12 — Build verification (pio run) + REVIEW.md Iteration 2 section
 ```
 
@@ -147,35 +144,75 @@ Each agent works in an isolated **git worktree** (its own branch). The orchestra
 merges to `main` only after the build/tests pass. This produces a `git log --graph` with one
 merge commit per agent, making each agent's contribution independently reviewable.
 
-### Worktree workflow (per agent)
+### Orchestrator model — one invocation per agent
+
+The orchestrator is a **general-purpose agent** launched once per child agent (not once for the
+entire pipeline). Each invocation handles exactly one child agent end-to-end, then returns
+a PASS/HALT report to the session. The session reviews and decides whether to launch the next.
 
 ```text
-Orchestrator:
+Session → orchestrator-10 → PASS/HALT report → Session review
+Session → orchestrator-11 → PASS/HALT report → Session review
+Session → orchestrator-12 → PASS/HALT report → Session review
+```
+
+### Worktree workflow (per orchestrator invocation)
+
+```text
+Orchestrator agent:
   1. git worktree add .worktrees/agentN -b agent/N-description
   2. Update TASKS.md → 🔄 In Progress
-  3. Launch agent with prompt referencing the worktree path
-Agent:
+  3. Launch child agent with prompt referencing the worktree path
+Child agent:
   4. Write files inside the worktree directory
-  5. git -C <worktree> add + commit
-Orchestrator:
-  6. pio run (or pio test) inside the worktree to verify
-  7. If PASS:
+  5. Write logs/agentN-description.md (operations log)
+  6. git -C <worktree> add + commit (code + log file)
+Orchestrator agent:
+  7. Read child agent log; run gate conditions independently:
+       a. pio run -e d1_mini  (must exit 0)
+       b. pio test -e native  (Agents 10 and 12 only; must exit 0)
+       c. Verify expected output files exist and are non-empty
+       d. Check no TODO/FIXME markers in changed files
+  8. If ALL gates PASS:
        git merge --no-ff agent/N-description -m "Merge agent/N-description: ..."
        git worktree remove .worktrees/agentN
        git branch -d agent/N-description
-       Update TASKS.md → ✅ Done
-  8. If FAIL: agent is re-run or fixed before merge
+       Update TASKS.md → ✅ Done; append to STATUS.md
+       Return PASS report to session
+  9. If any gate FAILS (up to 3 retries for build/test errors, inject full error in retry prompt):
+       If repeated identical error OR merge conflict: halt immediately
+       On halt: preserve worktree + branch; output structured HALT report to session
 ```
 
-Worktrees live in `.worktrees/` (gitignored). Branches are merged into `main` after passing.
+### File ownership
 
-### TASKS.md update responsibility
+| Owner | Files |
+| --- | --- |
+| Session | CLAUDE.md, PLAN.md, REQUIREMENTS.md |
+| Orchestrator agent | TASKS.md, STATUS.md, REVIEW.md |
+| Each child agent | `logs/agentN-description.md` (operations log) |
 
-**The orchestrator** (main Claude session) owns TASKS.md and all other `.md` files — not the agents.
+### Agent log files
 
-- Set `🔄 In Progress` **before** launching the agent
-- Set `✅ Done` **after** merge to main is confirmed
-- REQUIREMENTS.md, PLAN.md, STATUS.md, REVIEW.md — all updated and committed by the orchestrator after each agent completes, never by the agent itself
+Each child agent writes `logs/agentN-description.md` to its worktree before committing. The log
+is committed with the code and merged to `main` — creating a permanent audit trail in git history.
+
+Required sections: Files written/modified · Steps performed · Build/test results · Issues encountered · Exit status (PASS/FAIL)
+
+### Halt and report protocol
+
+On failure the orchestrator outputs:
+
+```text
+HALT — Agent N failed
+Failure type: <build | test | merge-conflict | file-missing | repeated-error>
+Attempts: N/3
+Last error: <full stderr / test output>
+Git state: branch agent/N-xxx at <hash>, worktree .worktrees/agentN PRESERVED
+Recommended action: <inspect | re-brief with corrected spec | manual fix>
+```
+
+Worktree and branch are NOT cleaned up on halt — session must inspect and clean up after review.
 
 ---
 
