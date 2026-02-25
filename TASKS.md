@@ -6,7 +6,7 @@
 | 2 | Agent 2 | WifiPortalManager.cpp | ✅ Done | WifiPortalManager.cpp |
 | 3 | Agent 3 | MqttClient.cpp + DhtSensor.cpp | ✅ Done | MqttClient.cpp, DhtSensor.cpp |
 | 4 | Agent 4 | LedIndicator.cpp | ✅ Done | LedIndicator.cpp |
-| 5 | Agent 5 | src/main.cpp | ⬜ Pending | |
+| 5 | Agent 5 | src/main.cpp | ✅ Done | src/main.cpp |
 | 6 | Agent 6 | Unit tests | ⬜ Pending | |
 | 7 | Agent 7 | Build verification | ⬜ Pending | |
 | 8 | Agent 8 | Compliance review | ⬜ Pending | |

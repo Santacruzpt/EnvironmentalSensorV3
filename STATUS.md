@@ -57,3 +57,17 @@ Files created:
 Build: pio run -e d1_mini → PASS (verified by orchestrator)
 Notes: All led_update_* use static phase variables; GPIO written every call (harmless).
 led_error_blocking uses delay() to feed ESP8266 watchdog. Active LOW: LOW=on, HIGH=off.
+
+## Agent 5 — src/main.cpp — 2026-02-25
+
+Files created/modified:
+
+- src/main.cpp (replaced placeholder)
+
+Build: pio run -e d1_mini → PASS (SUCCESS, 25s, RAM 40.5%, Flash 38.3%)
+Notes: WiFi and MQTT connect loops inlined in main.cpp for LED integration (millis()-based
+LED requires access to the polling loop). open_portal_and_reboot() helper centralises
+parameter setup; never returns. deepSleep uses (uint64_t) cast. Static WiFiClient declared
+in setup() for MQTT (avoids new/malloc). config_save(cfg) with wifi_reset=false written
+before WiFi.disconnect() in scenario 3. Sensor reads inlined with LED updates in inter-read
+gaps. Serial warning emitted if sleep_normal_s > 4294.
