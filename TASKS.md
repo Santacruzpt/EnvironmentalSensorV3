@@ -11,7 +11,7 @@
 | 7 | Agent 7 | Build verification | ✅ Done | PASS: RAM 40.5%, Flash 38.3% |
 | 8 | Agent 8 | Compliance review | ✅ Done | REVIEW.md |
 | 9 | Agent 9 | REQUIREMENTS.md — Iteration 2 spec | ✅ Done (by orchestrator) | REQUIREMENTS.md |
-| 10 | Agent 10 | utils.h + unit tests | ⬜ Pending | src/utils.h, test/test_all.cpp |
+| 10 | Agent 10 | utils.h + unit tests | ✅ Done | src/utils.h, test/test_all.cpp, logs/agent10-utils-tests.md |
 | 11 | Agent 11 | main.cpp — Iteration 2 firmware | ⬜ Pending | src/main.cpp |
 | 12 | Agent 12 | Build verify + REVIEW.md Iteration 2 | ⬜ Pending | REVIEW.md |
 

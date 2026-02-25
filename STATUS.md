@@ -113,3 +113,19 @@ Notes: Two deviations found.
     requirement specifies QoS 1. PubSubClient publish() has no QoS parameter —
     documented in REVIEW.md §10.
 Merged via branch agent/8-compliance-review.
+
+## Agent 10 — utils.h + unit tests — 2026-02-25
+
+Files created/modified:
+
+- src/utils.h (added build_telemetry_topic, battery_status_str)
+- test/test_all.cpp (added 6 new Unity tests)
+- logs/agent10-utils-tests.md
+
+Build: pio run -e d1_mini → PASS (RAM 40.5%, Flash 38.3%)
+Tests: pio test -e native → PASS (14/14 tests — 8 existing + 6 new)
+Notes: build_telemetry_topic() formats topics as "{root}/{device}/telemetry/{sub}" for
+Iteration 2's new MQTT topic hierarchy. battery_status_str() returns "BAT_CRIT",
+"BAT_LOW", or nullptr based on <= comparisons against thresholds. All 6 new tests
+passed natively (GCC available in PATH). No existing tests were modified or broken.
+Merged via branch agent/10-utils-tests.
