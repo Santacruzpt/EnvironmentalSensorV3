@@ -147,3 +147,18 @@ Step 7 applies battery_status_str() priority (BAT_CRIT/BAT_LOW) before sensor OK
 Step 9b publishes battery voltage to telemetry/voltage (always, regardless of sensor state).
 Step 13 selects sleep_s from battery thresholds (critical/low/normal) then calls sleep_chained().
 Merged via branch agent/11-main-iteration2.
+
+## Agent 12 — Build Verify + REVIEW.md Iteration 2 — 2026-02-25
+
+Files created/modified:
+
+- REVIEW.md (added Iteration 2 compliance section — §IT2-1 through §IT2-9, lines 569–756)
+- logs/agent12-build-verify.md
+
+Build: pio run -e d1_mini → PASS (SUCCESS, RAM 40.6%, Flash 38.4%)
+Tests: pio test -e native → PASS (14/14 tests)
+Notes: Iteration 2 compliance: all requirements implemented. One known library deviation (QoS 0
+for all publishes — PubSubClient limitation, same as Iteration 1 Deviation 2). One documentation
+note: REQUIREMENTS.md portal parameters table still shows battery.critical_v=3.2 (should be 3.40);
+code is self-consistent at 3.40 — only the portal table needs updating.
+Merged via branch agent/12-build-verify.
