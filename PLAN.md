@@ -130,6 +130,17 @@ Agent 8  — REVIEW.md compliance checklist
 Each agent: self-verifies with `pio run -e d1_mini` (or `pio test -e native` for Agent 6) before
 declaring done. Git checkpoint committed after each batch.
 
+### TASKS.md update responsibility
+
+**The orchestrator** (main Claude session) is responsible for TASKS.md updates — not the agents.
+
+- Set `🔄 In Progress` **before** launching the agent (or parallel batch)
+- Set `✅ Done` **after** the build is verified by the orchestrator
+
+Agents must not be relied on to update TASKS.md — they may lack Bash access or run in parallel
+with file conflicts. The orchestrator always has context on which agents have launched and
+which builds have passed.
+
 ---
 
 ## Agent 5 — main.cpp Self-Check
