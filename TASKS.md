@@ -3,9 +3,9 @@
 | # | Agent | Role | Status | Files Created |
 |---|-------|------|--------|---------------|
 | 1 | Agent 1 | Interfaces + Config + platformio.ini | ✅ Done | ConfigManager.h/cpp, WifiPortalManager.h, MqttClient.h, LedIndicator.h, DhtSensor.h, utils.h, platformio.ini |
-| 2 | Agent 2 | WifiPortalManager.cpp | ⬜ Pending | |
-| 3 | Agent 3 | MqttClient.cpp + DhtSensor.cpp | ⬜ Pending | |
-| 4 | Agent 4 | LedIndicator.cpp | ⬜ Pending | |
+| 2 | Agent 2 | WifiPortalManager.cpp | ✅ Done | WifiPortalManager.cpp |
+| 3 | Agent 3 | MqttClient.cpp + DhtSensor.cpp | ✅ Done | MqttClient.cpp, DhtSensor.cpp |
+| 4 | Agent 4 | LedIndicator.cpp | ✅ Done | LedIndicator.cpp |
 | 5 | Agent 5 | src/main.cpp | ⬜ Pending | |
 | 6 | Agent 6 | Unit tests | ⬜ Pending | |
 | 7 | Agent 7 | Build verification | ⬜ Pending | |
