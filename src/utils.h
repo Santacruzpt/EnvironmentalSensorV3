@@ -26,6 +26,10 @@ inline void format_float_1dp(float val, char* buf, size_t len) {
     snprintf(buf, len, "%.1f", val);
 }
 
+inline void format_float_2dp(float val, char* buf, size_t len) {
+    snprintf(buf, len, "%.2f", val);
+}
+
 inline void build_telemetry_topic(const char* root, const char* device,
                                   const char* sub, char* buf, size_t len) {
     snprintf(buf, len, "%s/%s/telemetry/%s", root, device, sub);

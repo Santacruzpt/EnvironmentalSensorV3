@@ -377,7 +377,7 @@ void setup() {
     // -- Step 9b: Publish battery voltage (always published) ──────────────────
     {
         char volt_buf[16];
-        format_float_1dp(battery_v, volt_buf, sizeof(volt_buf));
+        format_float_2dp(battery_v, volt_buf, sizeof(volt_buf));
         mqtt_publish_measurement(mqtt_client, topic_volt, volt_buf);
         Serial.printf("[MQTT] Published voltage: %s -> %s\n", topic_volt, volt_buf);
     }
