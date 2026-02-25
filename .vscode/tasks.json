@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "PIO: Upload Filesystem",
+            "type": "shell",
+            "command": "pio run --target uploadfs",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "PIO: Upload Firmware",
+            "type": "shell",
+            "command": "pio run --target upload",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "shared" },
+            "problemMatcher": []
+        },
+        {
+            "label": "PIO: Monitor",
+            "type": "shell",
+            "command": "pio device monitor",
+            "group": "test",
+            "presentation": { "reveal": "always", "panel": "dedicated" },
+            "problemMatcher": []
+        }
+    ]
+}

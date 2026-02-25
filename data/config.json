@@ -1,7 +1,0 @@
-{
-	"server": "serverip",
-	"mqtt_server": "192.168.1.200",
-	"mqtt_port": "1883",
-	"mqtt_topic": "devices/envsensor/telemetry",
-	"reset_wifi": "false"
-}

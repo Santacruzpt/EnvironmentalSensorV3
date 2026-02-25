@@ -3,4 +3,10 @@
 
 # PlatformIO
 .pio/
-.vscode/
+
+# Config contains sensitive data (MQTT credentials) — use data/config.example.json as template
+data/config.json
+
+# VSCode — exclude generated/personal files but keep shared tasks
+.vscode/*
+!.vscode/tasks.json

@@ -1,0 +1,21 @@
+{
+    "wifi": {
+        "reset": false
+    },
+    "mqtt": {
+        "server": "",
+        "port": 1883,
+        "topic_root": "devices",
+        "username": "",
+        "password": ""
+    },
+    "sleep": {
+        "normal_s": 60,
+        "low_battery_s": 300,
+        "critical_battery_s": 86400
+    },
+    "battery": {
+        "low_v": 3.5,
+        "critical_v": 3.2
+    }
+}
