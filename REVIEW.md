@@ -263,16 +263,17 @@ reading the source. Every `[ ] UNIMPLEMENTED` entry is absent from the source.
 
 ### 4.1 Measurement Payloads
 
-- [x] Temperature: 1 decimal place string, retain true, QoS 0
-  `src/main.cpp:327–328` — `format_float_1dp(temp, ...)` then `mqtt_publish_measurement(...)`
+- [x] Temperature: integer string (no decimal places), retain true, QoS 0
+  `src/main.cpp:368–370` — `format_float_0dp(temp, ...)` then `mqtt_publish_measurement(...)`
   `lib/MqttClient/MqttClient.cpp:40–42` — `client.publish(topic, payload, true)` (retain=true)
   `lib/MqttClient/MqttClient.h:21–23` — documented as QoS 0
   **NOTE:** PubSubClient's `publish(topic, payload, retained)` signature uses QoS 0. The
   comment in `MqttClient.cpp:36` acknowledges PubSubClient only supports QoS 0 for publish.
   This is correct per requirement (QoS 0 for measurements).
+  DHT11 resolution is 1°C — integer string accurately reflects sensor capability.
 
-- [x] Humidity: 1 decimal place string, retain true, QoS 0
-  `src/main.cpp:331–332` — same pattern as temperature
+- [x] Humidity: integer string (no decimal places), retain true, QoS 0
+  `src/main.cpp:372–374` — same pattern as temperature; DHT11 resolution is 1% RH
 
 ### 4.2 Status Payload
 
@@ -546,6 +547,7 @@ but are unused in the main flow. This is not a requirement violation.
 | `format_device_name` — zero-padded chip ID | Unit test (`test/test_all.cpp:25–29`) |
 | `build_topic` — standard path | Unit test (`test/test_all.cpp:33–37`) |
 | `build_topic` — nested root | Unit test (`test/test_all.cpp:39–43`) |
+| `format_float_0dp` — integer output (used for temp/hum) | No unit test yet |
 | `format_float_1dp` — non-zero value | Unit test (`test/test_all.cpp:47–51`) |
 | `format_float_1dp` — zero | Unit test (`test/test_all.cpp:53–57`) |
 | Config schema JSON parsing (all keys) | Hardware-only (requires LittleFS + device) |

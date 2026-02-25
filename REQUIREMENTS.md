@@ -137,8 +137,11 @@ Individual topics are used (one per measurement) rather than a single JSON paylo
 
 Plain string values, published to individual topics:
 
-- `…/temperature` → `"22.5"` — degrees Celsius, 1 decimal place, retain true, QoS 0
-- `…/humidity` → `"65.0"` — relative humidity %, 1 decimal place, retain true, QoS 0
+- `…/temperature` → `"22"` — degrees Celsius, integer string (no decimal places), retain true, QoS 0
+- `…/humidity` → `"65"` — relative humidity %, integer string (no decimal places), retain true, QoS 0
+
+Note: DHT11 has 1°C / 1% RH resolution and always returns integer values — publishing without
+decimal places accurately reflects sensor resolution.
 
 QoS 0 with retain=true means the broker stores and re-serves the last value, but if a publish
 packet is lost in transit the retained value goes stale without either side knowing. This is
@@ -235,8 +238,8 @@ Plain string, published to `…/status`:
 ### Battery Voltage
 
 - Read `analogRead(A0)` once per cycle immediately after sensor read (Step 5b)
-- Publish to `{topic_root}/esp-{chip_id}/telemetry/voltage` — 1 decimal place string, retain true, QoS 0
-- Example: `"3.7"`
+- Publish to `{topic_root}/esp-{chip_id}/telemetry/voltage` — 2 decimal places string, retain true, QoS 0
+- Example: `"3.70"`
 
 ### MQTT Topics (change from Iteration 1)
 
@@ -289,7 +292,7 @@ Select sleep duration based on measured voltage — evaluate top-to-bottom, firs
 - **Step 5b** (new, between Steps 5 and 6): Read `analogRead(A0)`, convert to `battery_v`, print to Serial
 - **Step 7** (change): Determine status using priority table above
 - **Steps 8 & 9** (change): Topics now use `build_telemetry_topic()` for temperature and humidity
-- **Step 9b** (new, after Step 9): Publish `battery_v` formatted as `"X.X"` to `…/telemetry/voltage`
+- **Step 9b** (new, after Step 9): Publish `battery_v` formatted as `"X.XX"` to `…/telemetry/voltage`
 - **Step 13** (change): Select sleep duration based on `battery_v`; use `sleep_chained()` helper for durations > 4294 s
 
 ---

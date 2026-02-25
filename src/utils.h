@@ -18,6 +18,10 @@ inline void build_topic(const char* root, const char* device,
     snprintf(buf, len, "%s/%s/%s", root, device, sub);
 }
 
+inline void format_float_0dp(float val, char* buf, size_t len) {
+    snprintf(buf, len, "%.0f", val);
+}
+
 inline void format_float_1dp(float val, char* buf, size_t len) {
     snprintf(buf, len, "%.1f", val);
 }
