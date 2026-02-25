@@ -4,6 +4,9 @@
 # PlatformIO
 .pio/
 
+# Agent worktrees (temporary; merged to main before removal)
+.worktrees/
+
 # Config contains sensitive data (MQTT credentials) — use data/config.example.json as template
 data/config.json
 

@@ -127,19 +127,38 @@ Agent 7  — Full build verification (pio run -e d1_mini clean)
 Agent 8  — REVIEW.md compliance checklist
 ```
 
-Each agent: self-verifies with `pio run -e d1_mini` (or `pio test -e native` for Agent 6) before
-declaring done. Git checkpoint committed after each batch.
+Each agent works in an isolated **git worktree** (its own branch). The orchestrator verifies and
+merges to `main` only after the build/tests pass. This produces a `git log --graph` with one
+merge commit per agent, making each agent's contribution independently reviewable.
+
+### Worktree workflow (per agent)
+
+```text
+Orchestrator:
+  1. git worktree add .worktrees/agentN -b agent/N-description
+  2. Update TASKS.md → 🔄 In Progress
+  3. Launch agent with prompt referencing the worktree path
+Agent:
+  4. Write files inside the worktree directory
+  5. git -C <worktree> add + commit
+Orchestrator:
+  6. pio run (or pio test) inside the worktree to verify
+  7. If PASS:
+       git merge --no-ff agent/N-description -m "Merge agent/N-description: ..."
+       git worktree remove .worktrees/agentN
+       git branch -d agent/N-description
+       Update TASKS.md → ✅ Done
+  8. If FAIL: agent is re-run or fixed before merge
+```
+
+Worktrees live in `.worktrees/` (gitignored). Branches are merged into `main` after passing.
 
 ### TASKS.md update responsibility
 
-**The orchestrator** (main Claude session) is responsible for TASKS.md updates — not the agents.
+**The orchestrator** (main Claude session) owns TASKS.md — not the agents.
 
-- Set `🔄 In Progress` **before** launching the agent (or parallel batch)
-- Set `✅ Done` **after** the build is verified by the orchestrator
-
-Agents must not be relied on to update TASKS.md — they may lack Bash access or run in parallel
-with file conflicts. The orchestrator always has context on which agents have launched and
-which builds have passed.
+- Set `🔄 In Progress` **before** launching the agent
+- Set `✅ Done` **after** merge to main is confirmed
 
 ---
 
