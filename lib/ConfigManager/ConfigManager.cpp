@@ -1,9 +1,6 @@
-#ifndef NATIVE_TEST
-
-#include <Arduino.h>
-#include <LittleFS.h>
-#include <ArduinoJson.h>
+// config_apply_defaults has no Arduino dependencies — compiles on all platforms
 #include "ConfigManager.h"
+#include <string.h>
 
 void config_apply_defaults(Config& cfg) {
     cfg.wifi_reset = false;
@@ -19,6 +16,12 @@ void config_apply_defaults(Config& cfg) {
     cfg.battery_low_v = 3.5f;
     cfg.battery_critical_v = 3.2f;
 }
+
+#ifndef NATIVE_TEST
+
+#include <Arduino.h>
+#include <LittleFS.h>
+#include <ArduinoJson.h>
 
 bool config_load(Config& cfg) {
     if (!LittleFS.begin()) {
