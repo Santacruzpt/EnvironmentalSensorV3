@@ -228,8 +228,10 @@ Plain string, published to `…/status`:
 - Wemos D1 Mini Battery Shield (TP5410-based): LiPo charger + DC-DC boost converter (3.7 V → 5 V)
 - Battery voltage is read from **A0** via the shield's built-in resistor divider — this measures
   the raw LiPo voltage (before the boost converter), not the 5 V regulated output
-- Scale factor: `battery_v = analogRead(A0) * (4.2f / 1023.0f)` for shield v1.1.0
-  (full-scale = 4.2 V, fully charged LiPo; adjust constant if using a different divider ratio)
+- Scale factor: `battery_v = analogRead(A0) * (4.384f / 1023.0f)` for shield v1.1.0
+  (nominal full-scale is 4.2 V, but the actual divider ratio varies by unit; 4.384 is a measured
+  calibration value — multimeter read 3.58 V when firmware reported 3.43 V with the 4.2 constant;
+  adjust if your unit differs)
 - The scale factor is a compile-time constant `BATTERY_ADC_SCALE` in `src/main.cpp`
 
 ### Battery Voltage

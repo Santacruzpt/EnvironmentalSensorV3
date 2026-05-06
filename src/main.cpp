@@ -13,7 +13,7 @@
 #define DHT_PIN           14    // D5 = GPIO14
 #define DHT_TYPE          DHT11
 #define NUM_READS         3
-#define BATTERY_ADC_SCALE (4.2f / 1023.0f)  // Wemos D1 Mini Battery Shield v1.1.0
+#define BATTERY_ADC_SCALE (4.384f / 1023.0f)  // Wemos D1 Mini Battery Shield v1.1.0 — calibrated (3.58 V measured)
 #define SLEEP_MAGIC       0xDEADBEEF
 #define SLEEP_MAX_S       4294
 
