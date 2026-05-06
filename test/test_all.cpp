@@ -69,7 +69,7 @@ void test_defaults_all_fields(void) {
     TEST_ASSERT_EQUAL_STRING("devices", cfg.mqtt_topic_root);
     TEST_ASSERT_EQUAL_STRING("", cfg.mqtt_username);
     TEST_ASSERT_EQUAL_STRING("", cfg.mqtt_password);
-    TEST_ASSERT_EQUAL_INT(60, cfg.sleep_normal_s);
+    TEST_ASSERT_EQUAL_INT(3600, cfg.sleep_normal_s);
     TEST_ASSERT_EQUAL_INT(300, cfg.sleep_low_battery_s);
     TEST_ASSERT_EQUAL_INT(86400, cfg.sleep_critical_battery_s);
     TEST_ASSERT_FLOAT_WITHIN(0.001f, 3.5f, cfg.battery_low_v);
@@ -88,7 +88,7 @@ void test_defaults_unconditional_overwrite(void) {
     config_apply_defaults(cfg);
 
     TEST_ASSERT_EQUAL_INT(1883, cfg.mqtt_port);        // overwritten
-    TEST_ASSERT_EQUAL_INT(60, cfg.sleep_normal_s);     // overwritten
+    TEST_ASSERT_EQUAL_INT(3600, cfg.sleep_normal_s);   // overwritten
     TEST_ASSERT_EQUAL_STRING("devices", cfg.mqtt_topic_root);
     TEST_ASSERT_EQUAL_INT(300, cfg.sleep_low_battery_s);
 }

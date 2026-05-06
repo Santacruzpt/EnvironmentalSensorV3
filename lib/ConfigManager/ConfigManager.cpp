@@ -10,7 +10,7 @@ void config_apply_defaults(Config& cfg) {
     cfg.mqtt_topic_root[sizeof(cfg.mqtt_topic_root) - 1] = '\0';
     cfg.mqtt_username[0] = '\0';
     cfg.mqtt_password[0] = '\0';
-    cfg.sleep_normal_s = 60;
+    cfg.sleep_normal_s = 3600;
     cfg.sleep_low_battery_s = 300;
     cfg.sleep_critical_battery_s = 86400;
     cfg.battery_low_v = 3.5f;

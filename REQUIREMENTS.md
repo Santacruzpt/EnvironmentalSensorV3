@@ -24,7 +24,7 @@
         "password": ""
     },
     "sleep": {
-        "normal_s": 60,
+        "normal_s": 3600,
         "low_battery_s": 300,
         "critical_battery_s": 86400
     },
@@ -56,7 +56,7 @@ Hardcoded defaults. For keys that appear in the Configuration Portal parameter t
 | `mqtt.topic_root` | `"devices"` |
 | `mqtt.username` | `""` |
 | `mqtt.password` | `""` |
-| `sleep.normal_s` | `60` |
+| `sleep.normal_s` | `3600` |
 | `sleep.low_battery_s` | `300` |
 | `sleep.critical_battery_s` | `86400` |
 | `battery.low_v` | `3.5` |
@@ -104,7 +104,7 @@ Each `WiFiManagerParameter` requires a fixed buffer length allocated at declarat
 | MQTT Username | `mqtt.username` | _(empty)_ | 64 |
 | MQTT Password | `mqtt.password` | _(empty)_ | 64 |
 | MQTT Topic Root | `mqtt.topic_root` | devices | 64 |
-| Sleep Normal (s) | `sleep.normal_s` | 60 | 8 |
+| Sleep Normal (s) | `sleep.normal_s` | 3600 | 8 |
 | Sleep Low Battery (s) | `sleep.low_battery_s` | 300 | 8 |
 | Sleep Critical Battery (s) | `sleep.critical_battery_s` | 86400 | 8 |
 | Battery Low Voltage | `battery.low_v` | 3.5 | 8 |

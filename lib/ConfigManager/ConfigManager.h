@@ -36,7 +36,7 @@ void config_apply_defaults(Config& cfg);
 //   mqtt_topic_root        = "devices"
 //   mqtt_username          = "" (empty)
 //   mqtt_password          = "" (empty)
-//   sleep_normal_s         = 60
+//   sleep_normal_s         = 3600
 //   sleep_low_battery_s    = 300
 //   sleep_critical_battery_s = 86400
 //   battery_low_v          = 3.5f

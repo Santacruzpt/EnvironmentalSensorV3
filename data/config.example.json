@@ -10,7 +10,7 @@
         "password": ""
     },
     "sleep": {
-        "normal_s": 60,
+        "normal_s": 3600,
         "low_battery_s": 300,
         "critical_battery_s": 86400
     },
