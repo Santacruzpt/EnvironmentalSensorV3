@@ -13,7 +13,8 @@
 #define DHT_PIN           14    // D5 = GPIO14
 #define DHT_TYPE          DHT11
 #define NUM_READS         3
-#define BATTERY_ADC_SCALE (4.384f / 1023.0f)  // Wemos D1 Mini Battery Shield v1.1.0 — calibrated (3.58 V measured)
+#define BATTERY_ADC_SCALE           (4.384f / 1023.0f)  // Wemos D1 Mini Battery Shield v1.1.0 — calibrated (3.58 V measured)
+#define BATTERY_CALIBRATION_OFFSET_V (-0.10f)             // measured offset: device reads 0.1 V high vs multimeter
 #define SLEEP_MAGIC       0xDEADBEEF
 #define SLEEP_MAX_S       4294
 
@@ -295,8 +296,8 @@ void setup() {
 
     // -- Step 5b: Read battery voltage ────────────────────────────────────────
     int   adc_raw   = analogRead(A0);
-    float battery_v = (float)adc_raw * BATTERY_ADC_SCALE;
-    Serial.printf("[Batt] ADC raw=%d  voltage=%.2fV\n", adc_raw, battery_v);
+    float battery_v = (float)adc_raw * BATTERY_ADC_SCALE + BATTERY_CALIBRATION_OFFSET_V;
+    Serial.printf("[Batt] ADC raw=%d  voltage=%.2fV (calibrated)\n", adc_raw, battery_v);
 
     // Build topics — status: build_topic; temp/hum/volt: build_telemetry_topic
     char topic_status[96];
